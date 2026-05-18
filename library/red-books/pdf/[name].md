@@ -6,13 +6,8 @@ title: 红色书籍
 import { useData, withBase } from "vitepress";
 
 const { params } = useData();
-const fileName = params.value.name + ".pdf";
 const title = params.value.name;
-
-const pdfModules = import.meta.glob("/pages/library/red-books/*.pdf", { eager: true });
-const pdfKey = Object.keys(pdfModules).find((k) => k.endsWith(fileName));
-const mod = pdfKey ? pdfModules[pdfKey] : null;
-const pdfUrl = mod?.default ? withBase(mod.default) : "";
+const pdfUrl = withBase(`/pages/library/red-books/${params.value.name}.pdf`);
 </script>
 
 <PdfContent :title="title" :pdf-url="pdfUrl" />
