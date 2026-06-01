@@ -5,10 +5,10 @@ aside: false
 
 <script setup>
 import { useData } from "vitepress"
-import LibraryList from "@/components/List/LibraryList.vue"
+import ContentPreview from "@/components/ContentPreview.vue"
 
 const { theme } = useData()
 const allFiles = theme.value.materialsData || []
 </script>
 
-<LibraryList :data="allFiles" :show-categories="true" :show-tags="true" :show-aside="true" />
+<ContentPreview :data="allFiles" :show-categories="true" :show-tags="true" :show-aside="true" />

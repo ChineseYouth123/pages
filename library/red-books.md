@@ -8,10 +8,10 @@ title: 红色书籍
 
 <script setup>
 import { useData } from "vitepress"
-import LibraryList from "@/components/List/LibraryList.vue"
+import ContentPreview from "@/components/ContentPreview.vue"
 
 const { theme } = useData()
 const allFiles = theme.value.redBooksData || []
 </script>
 
-<LibraryList :data="allFiles" :show-categories="false" :show-tags="false" :show-aside="false" />
+<ContentPreview :data="allFiles" :show-categories="false" :show-tags="false" :show-aside="false" />
