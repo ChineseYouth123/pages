@@ -25,23 +25,11 @@ const allTags = [...new Set(
   allFiles.flatMap((f) => f.tags),
 )].sort((a, b) => a.localeCompare(b, "zh-CN"))
 
-const MORE_THRESHOLD = 15
-
 const selectedCategory = ref("")
 const selectedTag = ref("")
 const currentPage = ref(1)
 const catExpand = ref(false)
 const tagExpand = ref(false)
-
-const visibleCategories = computed(() =>
-  catExpand.value ? allCategories : allCategories.slice(0, MORE_THRESHOLD),
-)
-const catOverflow = computed(() => allCategories.length > MORE_THRESHOLD)
-
-const visibleTags = computed(() =>
-  tagExpand.value ? allTags : allTags.slice(0, MORE_THRESHOLD),
-)
-const tagOverflow = computed(() => allTags.length > MORE_THRESHOLD)
 
 const categoryCount = computed(() => {
   const counts = {}
@@ -88,14 +76,13 @@ watch([selectedCategory, selectedTag], () => {
           @click="selectedCategory = ''"
         >全部</span>
         <span
-          v-for="cat in visibleCategories"
+          v-for="cat in allCategories"
           :key="cat"
           :class="['type-item', { choose: selectedCategory === cat }]"
           @click="selectedCategory = cat"
         >{{ cat }} <span class="num">{{ categoryCount[cat] }}</span></span>
       </div>
       <span
-        v-if="catOverflow"
         class="type-toggle"
         @click="catExpand = !catExpand"
       >
@@ -111,14 +98,13 @@ watch([selectedCategory, selectedTag], () => {
           @click="selectedTag = ''"
         >全部</span>
         <span
-          v-for="tag in visibleTags"
+          v-for="tag in allTags"
           :key="tag"
           :class="['type-item', { choose: selectedTag === tag }]"
           @click="selectedTag = tag"
         >{{ tag }} <span class="num">{{ tagCount[tag] }}</span></span>
       </div>
       <span
-        v-if="tagOverflow"
         class="type-toggle"
         @click="tagExpand = !tagExpand"
       >
