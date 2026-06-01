@@ -55,6 +55,14 @@ const allTags = [...new Set(
 
 const selectedTag = ref('')
 
+const tagCount = computed(() => {
+  const counts = {}
+  allFiles.forEach(f => {
+    f.tags.forEach(t => { counts[t] = (counts[t] || 0) + 1 })
+  })
+  return counts
+})
+
 const files = computed(() => {
   if (!selectedTag.value) return allFiles
   return allFiles.filter(f => f.tags.includes(selectedTag.value))
@@ -74,7 +82,7 @@ const files = computed(() => {
           :key="tag"
           :class="['type-item', { choose: selectedTag === tag }]"
           @click="selectedTag = tag"
-        >{{ tag }}</a>
+        >{{ tag }} <span class="num">{{ tagCount[tag] }}</span></a>
       </div>
     </div>
     <PostList :listData="files" />
@@ -129,13 +137,30 @@ const files = computed(() => {
       white-space: nowrap;
       height: 30px;
       cursor: pointer;
+      .num {
+        margin-left: 4px;
+        font-weight: normal;
+        padding: 2px 6px;
+        font-size: 0.75rem;
+        color: var(--main-font-color);
+        background-color: var(--main-card-border);
+        border-radius: 8px;
+      }
       &.choose {
         color: var(--main-card-background);
         background-color: var(--main-color);
+        .num {
+          color: var(--main-color);
+          background-color: rgba(255,255,255,0.2);
+        }
       }
       &:hover {
         color: var(--main-card-background);
         background-color: var(--main-color);
+        .num {
+          color: var(--main-color);
+          background-color: rgba(255,255,255,0.2);
+        }
       }
     }
   }
