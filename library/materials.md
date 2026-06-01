@@ -4,6 +4,7 @@ aside: false
 ---
 
 <script setup>
+import { ref, computed } from "vue"
 import PostList from "@/components/List/PostList.vue"
 import Aside from "@/components/Aside/index.vue"
 
@@ -11,7 +12,7 @@ const mdModules = import.meta.glob('/pages/library/materials/*.md', { eager: tru
 const txtGlob = import.meta.glob('/pages/library/materials/*.txt')
 const pdfGlob = import.meta.glob('/pages/library/materials/*.pdf')
 
-const files = [
+const allFiles = [
   ...Object.entries(mdModules).map(([path, mod]) => {
     const fileName = path.split('/').pop().replace(/\.md$/, '')
     const fm = mod.frontmatter || {}
@@ -47,10 +48,35 @@ const files = [
     }
   }),
 ].sort((a, b) => (b.date || 0) - (a.date || 0))
+
+const allTags = [...new Set(
+  Object.entries(mdModules).flatMap(([, mod]) => mod.frontmatter?.tags || [])
+)].sort((a, b) => a.localeCompare(b, 'zh-CN'))
+
+const selectedTag = ref('')
+
+const files = computed(() => {
+  if (!selectedTag.value) return allFiles
+  return allFiles.filter(f => f.tags.includes(selectedTag.value))
+})
 </script>
 
 <div class="home-content">
   <div class="posts-content">
+    <div class="type-bar s-card hover">
+      <div class="all-type">
+        <a
+          :class="['type-item', { choose: !selectedTag }]"
+          @click="selectedTag = ''"
+        >全部</a>
+        <a
+          v-for="tag in allTags"
+          :key="tag"
+          :class="['type-item', { choose: selectedTag === tag }]"
+          @click="selectedTag = tag"
+        >{{ tag }}</a>
+      </div>
+    </div>
     <PostList :listData="files" />
   </div>
   <Aside />
@@ -69,6 +95,49 @@ const files = [
 @media (max-width: 1200px) {
   .posts-content {
     width: 100%;
+  }
+}
+.type-bar {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.6rem;
+  font-weight: bold;
+  animation: fade-up 0.6s 0.3s backwards;
+  .all-type {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+    mask: linear-gradient(
+      90deg,
+      #fff 0,
+      #fff 90%,
+      hsla(0, 0%, 100%, 0.6) 95%,
+      hsla(0, 0%, 100%, 0) 100%
+    );
+    .type-item {
+      display: flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      margin-right: 6px;
+      font-weight: bold;
+      border-radius: 8px;
+      white-space: nowrap;
+      height: 30px;
+      cursor: pointer;
+      &.choose {
+        color: var(--main-card-background);
+        background-color: var(--main-color);
+      }
+      &:hover {
+        color: var(--main-card-background);
+        background-color: var(--main-color);
+      }
+    }
   }
 }
 </style>
