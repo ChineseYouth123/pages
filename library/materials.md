@@ -12,86 +12,42 @@ import Aside from "@/components/Aside/index.vue"
 const { theme } = useData()
 const postSize = theme.value.postSize || 10
 
-const mdModules = import.meta.glob('/pages/library/materials/*.md', { eager: true })
-const txtGlob = import.meta.glob('/pages/library/materials/*.txt')
-const pdfGlob = import.meta.glob('/pages/library/materials/*.pdf')
+// 数据来自全局配置（configuration approach）
+const allFiles = theme.value.materialsData || []
 
-const allFiles = [
-  ...Object.entries(mdModules).map(([path, mod]) => {
-    const fileName = path.split('/').pop().replace(/\.md$/, '')
-    const fm = mod.frontmatter || {}
-    const cats = fm.categories
-    return {
-      regularPath: '/pages/library/materials/' + encodeURIComponent(fileName),
-      title: fm.title || fileName,
-      date: fm.date ? new Date(fm.date).getTime() : null,
-      tags: fm.tags || [],
-      categories: Array.isArray(cats) ? cats : cats ? [cats] : [],
-      description: fm.description || '',
-      cover: fm.cover || null,
-    }
-  }),
-  ...Object.keys(txtGlob).map((path) => {
-    const fileName = path.split('/').pop().replace(/\.txt$/, '')
-    return {
-      regularPath: '/pages/library/materials/view/' + encodeURIComponent(fileName),
-      title: fileName,
-      date: null,
-      tags: [],
-      categories: [],
-      description: '',
-      cover: null,
-    }
-  }),
-  ...Object.keys(pdfGlob).map((path) => {
-    const fileName = path.split('/').pop().replace(/\.pdf$/, '')
-    return {
-      regularPath: '/pages/library/materials/pdf/' + encodeURIComponent(fileName),
-      title: fileName,
-      date: null,
-      tags: [],
-      categories: [],
-      description: '',
-      cover: null,
-    }
-  }),
-].sort((a, b) => (b.date || 0) - (a.date || 0))
-
+// 分类列表
 const allCategories = [...new Set(
-  allFiles.flatMap(f => f.categories)
-)].sort((a, b) => a.localeCompare(b, 'zh-CN'))
+  allFiles.flatMap((f) => f.categories),
+)].sort((a, b) => a.localeCompare(b, "zh-CN"))
 
+// 标签列表
 const allTags = [...new Set(
-  allFiles.flatMap(f => f.tags)
-)].sort((a, b) => a.localeCompare(b, 'zh-CN'))
+  allFiles.flatMap((f) => f.tags),
+)].sort((a, b) => a.localeCompare(b, "zh-CN"))
 
-const selectedCategory = ref('')
-const selectedTag = ref('')
+const selectedCategory = ref("")
+const selectedTag = ref("")
 const currentPage = ref(1)
 
 const categoryCount = computed(() => {
   const counts = {}
-  allFiles.forEach(f => {
-    f.categories.forEach(c => { counts[c] = (counts[c] || 0) + 1 })
-  })
+  allFiles.forEach((f) => f.categories.forEach((c) => { counts[c] = (counts[c] || 0) + 1 }))
   return counts
 })
 
 const tagCount = computed(() => {
   const counts = {}
-  allFiles.forEach(f => {
-    f.tags.forEach(t => { counts[t] = (counts[t] || 0) + 1 })
-  })
+  allFiles.forEach((f) => f.tags.forEach((t) => { counts[t] = (counts[t] || 0) + 1 }))
   return counts
 })
 
 const filteredData = computed(() => {
   let data = allFiles
   if (selectedCategory.value) {
-    data = data.filter(f => f.categories.includes(selectedCategory.value))
+    data = data.filter((f) => f.categories.includes(selectedCategory.value))
   }
   if (selectedTag.value) {
-    data = data.filter(f => f.tags.includes(selectedTag.value))
+    data = data.filter((f) => f.tags.includes(selectedTag.value))
   }
   return data
 })
@@ -108,8 +64,8 @@ watch([selectedCategory, selectedTag], () => {
 })
 </script>
 
-<div class="home-content">
-  <div class="posts-content">
+<div class="materials">
+  <div class="materials-content">
     <!-- 分类 -->
     <div v-if="allCategories.length" class="type-bar s-card hover">
       <div class="all-type">
@@ -174,17 +130,17 @@ watch([selectedCategory, selectedTag], () => {
 </div>
 
 <style scoped>
-.home-content {
+.materials {
   width: 100%;
   display: flex;
   flex-direction: row;
 }
-.posts-content {
+.materials-content {
   width: calc(100% - 300px);
   transition: width 0.3s;
 }
 @media (max-width: 1200px) {
-  .posts-content {
+  .materials-content {
     width: 100%;
   }
 }
@@ -238,7 +194,7 @@ watch([selectedCategory, selectedTag], () => {
 }
 .type-bar .all-type .type-item.choose .num {
   color: var(--main-color);
-  background-color: rgba(255,255,255,0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 .type-bar .all-type .type-item:hover {
   color: var(--main-card-background);
@@ -246,7 +202,7 @@ watch([selectedCategory, selectedTag], () => {
 }
 .type-bar .all-type .type-item:hover .num {
   color: var(--main-color);
-  background-color: rgba(255,255,255,0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 .pagination {
   position: relative;
