@@ -25,9 +25,23 @@ const allTags = [...new Set(
   allFiles.flatMap((f) => f.tags),
 )].sort((a, b) => a.localeCompare(b, "zh-CN"))
 
+const MORE_THRESHOLD = 15
+
 const selectedCategory = ref("")
 const selectedTag = ref("")
 const currentPage = ref(1)
+const catExpand = ref(false)
+const tagExpand = ref(false)
+
+const visibleCategories = computed(() =>
+  catExpand.value ? allCategories : allCategories.slice(0, MORE_THRESHOLD),
+)
+const catOverflow = computed(() => allCategories.length > MORE_THRESHOLD)
+
+const visibleTags = computed(() =>
+  tagExpand.value ? allTags : allTags.slice(0, MORE_THRESHOLD),
+)
+const tagOverflow = computed(() => allTags.length > MORE_THRESHOLD)
 
 const categoryCount = computed(() => {
   const counts = {}
@@ -68,33 +82,43 @@ watch([selectedCategory, selectedTag], () => {
   <div class="materials-content">
     <!-- 分类 -->
     <div v-if="allCategories.length" class="type-bar s-card hover">
-      <div class="all-type">
+      <div :class="['all-type', { expanded: catExpand }]">
         <a
           :class="['type-item', { choose: !selectedCategory }]"
           @click="selectedCategory = ''"
         >全部</a>
         <a
-          v-for="cat in allCategories"
+          v-for="cat in visibleCategories"
           :key="cat"
           :class="['type-item', { choose: selectedCategory === cat }]"
           @click="selectedCategory = cat"
         >{{ cat }} <span class="num">{{ categoryCount[cat] }}</span></a>
       </div>
+      <a
+        v-if="catOverflow"
+        class="type-toggle"
+        @click="catExpand = !catExpand"
+      >{{ catExpand ? "收起" : "更多" }}<i :class="['iconfont', catExpand ? 'icon-up' : 'icon-down']" /></a>
     </div>
     <!-- 标签 -->
     <div v-if="allTags.length" class="type-bar s-card hover">
-      <div class="all-type">
+      <div :class="['all-type', { expanded: tagExpand }]">
         <a
           :class="['type-item', { choose: !selectedTag }]"
           @click="selectedTag = ''"
         >全部</a>
         <a
-          v-for="tag in allTags"
+          v-for="tag in visibleTags"
           :key="tag"
           :class="['type-item', { choose: selectedTag === tag }]"
           @click="selectedTag = tag"
         >{{ tag }} <span class="num">{{ tagCount[tag] }}</span></a>
       </div>
+      <a
+        v-if="tagOverflow"
+        class="type-toggle"
+        @click="tagExpand = !tagExpand"
+      >{{ tagExpand ? "收起" : "更多" }}<i :class="['iconfont', tagExpand ? 'icon-up' : 'icon-down']" /></a>
     </div>
     <!-- 列表 -->
     <PostList :listData="pagedData" />
@@ -159,6 +183,7 @@ watch([selectedCategory, selectedTag], () => {
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-wrap: nowrap;
   overflow: hidden;
   mask: linear-gradient(
     90deg,
@@ -167,6 +192,11 @@ watch([selectedCategory, selectedTag], () => {
     hsla(0, 0%, 100%, 0.6) 95%,
     hsla(0, 0%, 100%, 0) 100%
   );
+  &.expanded {
+    flex-wrap: wrap;
+    overflow: visible;
+    mask: none;
+  }
 }
 .type-bar .all-type .type-item {
   display: flex;
@@ -203,6 +233,32 @@ watch([selectedCategory, selectedTag], () => {
 .type-bar .all-type .type-item:hover .num {
   color: var(--main-color);
   background-color: rgba(255, 255, 255, 0.2);
+}
+.type-bar .type-toggle {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 0.1rem 0.4rem;
+  font-weight: bold;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  height: 30px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--main-font-second-color);
+  transition: color 0.3s;
+  .iconfont {
+    margin-left: 2px;
+    font-size: 0.75rem;
+    transition: color 0.3s;
+  }
+  &:hover {
+    color: var(--main-color);
+    .iconfont {
+      color: var(--main-color);
+    }
+  }
 }
 .pagination {
   position: relative;
