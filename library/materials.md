@@ -83,42 +83,48 @@ watch([selectedCategory, selectedTag], () => {
     <!-- 分类 -->
     <div v-if="allCategories.length" class="type-bar s-card hover">
       <div :class="['all-type', { expanded: catExpand }]">
-        <a
+        <span
           :class="['type-item', { choose: !selectedCategory }]"
           @click="selectedCategory = ''"
-        >全部</a>
-        <a
+        >全部</span>
+        <span
           v-for="cat in visibleCategories"
           :key="cat"
           :class="['type-item', { choose: selectedCategory === cat }]"
           @click="selectedCategory = cat"
-        >{{ cat }} <span class="num">{{ categoryCount[cat] }}</span></a>
+        >{{ cat }} <span class="num">{{ categoryCount[cat] }}</span></span>
       </div>
-      <a
+      <span
         v-if="catOverflow"
         class="type-toggle"
         @click="catExpand = !catExpand"
-      >{{ catExpand ? "收起" : "更多" }}<i :class="['iconfont', catExpand ? 'icon-up' : 'icon-down']" /></a>
+      >
+        <template v-if="catExpand">收起<i class="iconfont icon-up" /></template>
+        <template v-else>更多<i class="iconfont icon-arrow-right" /></template>
+      </span>
     </div>
     <!-- 标签 -->
     <div v-if="allTags.length" class="type-bar s-card hover">
       <div :class="['all-type', { expanded: tagExpand }]">
-        <a
+        <span
           :class="['type-item', { choose: !selectedTag }]"
           @click="selectedTag = ''"
-        >全部</a>
-        <a
+        >全部</span>
+        <span
           v-for="tag in visibleTags"
           :key="tag"
           :class="['type-item', { choose: selectedTag === tag }]"
           @click="selectedTag = tag"
-        >{{ tag }} <span class="num">{{ tagCount[tag] }}</span></a>
+        >{{ tag }} <span class="num">{{ tagCount[tag] }}</span></span>
       </div>
-      <a
+      <span
         v-if="tagOverflow"
         class="type-toggle"
         @click="tagExpand = !tagExpand"
-      >{{ tagExpand ? "收起" : "更多" }}<i :class="['iconfont', tagExpand ? 'icon-up' : 'icon-down']" /></a>
+      >
+        <template v-if="tagExpand">收起<i class="iconfont icon-up" /></template>
+        <template v-else>更多<i class="iconfont icon-arrow-right" /></template>
+      </span>
     </div>
     <!-- 列表 -->
     <PostList :listData="pagedData" />
@@ -236,21 +242,18 @@ watch([selectedCategory, selectedTag], () => {
 }
 .type-bar .type-toggle {
   display: flex;
+  flex-direction: row;
   align-items: center;
   flex-shrink: 0;
   margin-left: 8px;
-  padding: 0.1rem 0.4rem;
   font-weight: bold;
-  font-size: 0.875rem;
-  border-radius: 8px;
-  height: 30px;
-  cursor: pointer;
   white-space: nowrap;
+  cursor: pointer;
   color: var(--main-font-second-color);
   transition: color 0.3s;
   .iconfont {
-    margin-left: 2px;
-    font-size: 0.75rem;
+    margin-left: 4px;
+    font-size: 0.9375rem;
     transition: color 0.3s;
   }
   &:hover {
