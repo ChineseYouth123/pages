@@ -1,0 +1,9 @@
+{
+	"nodes":[
+		{"id":"97e9812cb9c8f17e","x":-325,"y":-120,"width":250,"height":60,"type":"text","text":"自己"},
+		{"id":"46f78cd5d4ac65e4","x":56,"y":-126,"width":250,"height":60,"type":"text","text":"工作"}
+	],
+	"edges":[
+		{"id":"37fb720f6f9b1db5","fromNode":"97e9812cb9c8f17e","fromSide":"right","toNode":"46f78cd5d4ac65e4","toSide":"left"}
+	]
+}
